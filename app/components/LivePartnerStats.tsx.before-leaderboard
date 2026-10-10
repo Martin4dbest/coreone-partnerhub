@@ -1,0 +1,104 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { supabase } from "@/src/lib/supabase/client";
+
+type Metric = {
+  label: string;
+  count: number | null;
+};
+
+export default function LivePartnerStats() {
+  const [metrics, setMetrics] = useState<Metric[]>([
+    { label: "Partner applications", count: null },
+    { label: "School referrals", count: null },
+  ]);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadCounts() {
+      const [profiles, referrals] = await Promise.all([
+        supabase
+          .from("partner_profiles")
+          .select("*", { count: "exact", head: true }),
+
+        supabase.rpc("coreone_partnerhub_public_referral_count"),
+      ]);
+
+      if (!active) return;
+
+      const referralCount =
+        referrals.error || referrals.data == null
+          ? null
+          : Number(referrals.data);
+
+      setMetrics([
+        {
+          label: "Partner applications",
+          count: profiles.error ? null : profiles.count,
+        },
+        {
+          label: "School referrals",
+          count:
+            referralCount !== null && Number.isFinite(referralCount)
+              ? referralCount
+              : null,
+        },
+      ]);
+    }
+
+    void loadCounts().catch(() => {
+      if (active) {
+        setMetrics([
+          { label: "Partner applications", count: null },
+          { label: "School referrals", count: null },
+        ]);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  return (
+    <section className="live-data-section" aria-labelledby="live-data-title">
+      <div className="container">
+        <div className="live-data-heading">
+          <span className="eyebrow eyebrow-light">THE NETWORK</span>
+          <h2 id="live-data-title">
+            Real records. <span>Clear progress.</span>
+          </h2>
+          <p>
+            Counts are requested directly from the CoreOne PartnerHub database.
+            Figures appear only when database access permits verification.
+          </p>
+        </div>
+
+        <div className="live-data-grid">
+          {metrics.map((metric) => (
+            <article className="live-data-card" key={metric.label}>
+              <span className="live-data-label">{metric.label}</span>
+              <strong className="live-data-number">
+                {metric.count === null
+                  ? "—"
+                  : metric.count.toLocaleString("en-NG")}
+              </strong>
+              <span className="live-data-note">
+                {metric.count === null
+                  ? "Count currently unavailable"
+                  : "Database count"}
+              </span>
+            </article>
+          ))}
+        </div>
+
+        <p className="live-data-disclaimer">
+          Referral totals are aggregated by the database. Individual referral
+          records are not exposed through this public counter.
+        </p>
+      </div>
+    </section>
+  );
+}
