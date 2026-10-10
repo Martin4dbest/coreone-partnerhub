@@ -1194,3 +1194,139 @@ main h3 {
   }
 }
 
+
+/* CoreOne PartnerHub — final balanced landing-page font sizes */
+@media (min-width: 768px) {
+  .hero h1,
+  .hero h1 *,
+  .hero-title,
+  .hero-title * {
+    font-size: clamp(34px, 3.5vw, 43px) !important;
+    line-height: 1.2 !important;
+  }
+
+  .hero p,
+  .hero-subtitle {
+    font-size: 16px !important;
+    line-height: 1.75 !important;
+  }
+
+  main p,
+  main li {
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  main h2 {
+    font-size: clamp(27px, 2.8vw, 35px);
+  }
+
+  .footer-brand-block > p,
+  .footer-links a,
+  .footer-bottom {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  .hero h1,
+  .hero h1 *,
+  .hero-title,
+  .hero-title * {
+    font-size: clamp(30px, 8vw, 36px) !important;
+    line-height: 1.22 !important;
+    letter-spacing: -0.8px;
+  }
+
+  .hero p,
+  .hero-subtitle {
+    font-size: 15px !important;
+    line-height: 1.75 !important;
+  }
+
+  main p,
+  main li {
+    font-size: 16px;
+    line-height: 1.75;
+  }
+
+  main h2 {
+    font-size: clamp(25px, 6.2vw, 31px);
+    line-height: 1.25;
+  }
+
+  main h3 {
+    font-size: 20px;
+    line-height: 1.4;
+  }
+
+  .announcement {
+    font-size: 11px;
+    line-height: 1.5;
+  }
+
+  .login-link {
+    font-size: 12px;
+  }
+
+  .button-small {
+    font-size: 11px;
+  }
+
+  .hero-actions .button {
+    font-size: 12px;
+  }
+
+  .trust-item {
+    font-size: 12px;
+  }
+
+  .section-heading p,
+  .process-intro > p,
+  .step-content p {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .footer-brand-block > p,
+  .footer-links a,
+  .footer-links > strong,
+  .footer-bottom {
+    font-size: 12px;
+    line-height: 1.7;
+  }
+
+  .live-data-heading p {
+    font-size: 15px;
+  }
+
+  .live-data-label {
+    font-size: 15px;
+  }
+
+  .live-data-note,
+  .live-data-disclaimer {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 390px) {
+  .hero h1,
+  .hero h1 *,
+  .hero-title,
+  .hero-title * {
+    font-size: 30px !important;
+  }
+
+  .announcement {
+    font-size: 10px;
+  }
+
+  .login-link {
+    font-size: 11px;
+  }
+
+  .button-small {
+    font-size: 10px;
+  }
+}
