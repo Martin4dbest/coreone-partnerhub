@@ -16,6 +16,8 @@ export default function RegisterPage() {
   const [organization, setOrganization] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [educationLevel, setEducationLevel] = useState<"undergraduate" | "graduate">("undergraduate");
   const [nyscCompleted, setNyscCompleted] = useState("");
@@ -255,11 +257,11 @@ export default function RegisterPage() {
               </label>
 
               <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">Password
-                <input className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" type="password" placeholder="At least 8 characters" />
+                <span className="!relative !mt-1.5 !block"><input className="!block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !py-2.5 !pl-3 !pr-10 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" type={showPassword ? "text" : "password"} placeholder="At least 8 characters" /><button type="button" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Hide password" : "Show password"} className="!absolute !inset-y-0 !right-0 !px-3 !text-slate-500 hover:!text-teal-700">{showPassword ? "🙈" : "👁"}</button></span>
               </label>
 
               <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">Confirm password
-                <input className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} autoComplete="new-password" type="password" placeholder="Enter your password again" />
+                <span className="!relative !mt-1.5 !block"><input className="!block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !py-2.5 !pl-3 !pr-10 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required minLength={8} autoComplete="new-password" type={showConfirmPassword ? "text" : "password"} placeholder="Enter your password again" /><button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"} className="!absolute !inset-y-0 !right-0 !px-3 !text-slate-500 hover:!text-teal-700">{showConfirmPassword ? "🙈" : "👁"}</button></span>
               </label>
 
               <p className="auth-small sm:!col-span-2 !rounded-lg !border !border-teal-100 !bg-teal-50/70 !px-3 !py-3 !text-[11px] !leading-5 !text-slate-600">
