@@ -199,6 +199,12 @@ export default function AdminPage() {
               to submit school referrals.
             </p>
           </div>
+          <Link
+            href="/admin/representatives"
+            className="rounded-xl bg-emerald-600 px-5 py-3 text-sm font-bold text-white hover:bg-emerald-700"
+          >
+            Registered Representatives
+          </Link>
           <button
             onClick={() => void loadPartners()}
             disabled={loading}
@@ -367,6 +373,12 @@ export default function AdminPage() {
                 className="inline-flex items-center justify-center rounded-xl bg-rose-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-rose-700"
               >
                 Manage referrals <span className="ml-2" aria-hidden="true">→</span>
+              </Link>
+              <Link
+                href="/admin/admins"
+                className="inline-flex items-center justify-center rounded-xl bg-amber-500 px-4 py-3 text-xs font-bold text-slate-950 transition hover:bg-amber-400"
+              >
+                Manage administrators <span className="ml-2" aria-hidden="true">→</span>
               </Link>
               <Link
                 href="/admin/commission-tiers"

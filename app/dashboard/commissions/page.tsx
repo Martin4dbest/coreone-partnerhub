@@ -267,7 +267,7 @@ export default function CommissionsPage() {
             Commissions &amp; Payouts
           </h1>
           <p className="mt-1 text-sm text-slate-500">
-            Track commissions recorded by CoreOne after successful school onboarding and follow your payout requests[cite: 1].
+            Track commissions recorded by CoreOne after successful school onboarding and follow your payout requests.
           </p>
         </div>
 

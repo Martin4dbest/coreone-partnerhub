@@ -20,6 +20,14 @@ type Referral = {
   created_at: string;
 };
 
+type PartnerProfile = {
+  id: string;
+  full_name?: string | null;
+  name?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+};
+
 type Commission = {
   id: string;
   partner_id: string;
@@ -90,6 +98,7 @@ export default function AdminReferralManagementPage() {
   const [tab, setTab] = useState<Tab>("referrals");
   const [referrals, setReferrals] = useState<Referral[]>([]);
   const [commissions, setCommissions] = useState<Commission[]>([]);
+  const [partnerNames, setPartnerNames] = useState<Record<string, string>>({});
   const [payouts, setPayouts] = useState<Payout[]>([]);
   const [bankAccounts, setBankAccounts] = useState<Record<string, PartnerBankAccount>>({});
   const [amounts, setAmounts] = useState<Record<string, string>>({});
@@ -125,16 +134,38 @@ export default function AdminReferralManagementPage() {
         return;
       }
 
-      const [referralResult, commissionResult, payoutResult] =
+      const [referralResult, commissionResult, payoutResult, partnerResult] =
         await Promise.all([
           supabase.rpc("coreone_partnerhub_list_referrals"),
           supabase.rpc("coreone_partnerhub_list_commissions"),
           supabase.rpc("coreone_partnerhub_list_payouts"),
+          supabase.rpc("coreone_partnerhub_list_partners"),
         ]);
 
       if (referralResult.error) throw referralResult.error;
       if (commissionResult.error) throw commissionResult.error;
       if (payoutResult.error) throw payoutResult.error;
+      if (partnerResult.error) throw partnerResult.error;
+
+      const partnerRows = Array.isArray(partnerResult.data)
+        ? (partnerResult.data as unknown as PartnerProfile[])
+        : [];
+
+      setPartnerNames(
+        Object.fromEntries(
+          partnerRows.map((partner) => {
+            const fullName =
+              partner.full_name?.trim() ||
+              partner.name?.trim() ||
+              [partner.first_name, partner.last_name]
+                .filter((part) => part?.trim())
+                .join(" ")
+                .trim();
+
+            return [partner.id, fullName || "Name not provided"];
+          })
+        )
+      );
 
       const payoutRows = Array.isArray(payoutResult.data)
         ? (payoutResult.data as unknown as Payout[])
@@ -354,7 +385,12 @@ export default function AdminReferralManagementPage() {
       setMessage(`Payout status updated to ${readable(status)}.`);
       await loadData();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Unable to update payout.");
+      const details =
+        err && typeof err === "object" && "message" in err
+          ? String(err.message)
+          : String(err);
+      console.error("CoreOne payout update failed:", err);
+      setError(`Unable to update payout: ${details}`);
     } finally {
       setWorkingId("");
     }
@@ -564,7 +600,7 @@ export default function AdminReferralManagementPage() {
                               {referral?.school_name || "School referral"}
                             </h3>
                             <p className="mt-1 break-all text-[10px] leading-4 text-slate-500 sm:text-xs">
-                              Partner: {commission.partner_id}
+                              Representative: {partnerNames[commission.partner_id] || "Name not available"}
                             </p>
                             <p className="break-all text-[10px] leading-4 text-slate-500 sm:text-xs">
                               Referral: {commission.referral_id}
