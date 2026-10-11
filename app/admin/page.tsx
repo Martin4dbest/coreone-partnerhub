@@ -305,9 +305,7 @@ export default function AdminPage() {
                       </p>
                       <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-500">
                         <span>
-                          Organization: {partner.organization || "Not provided"}
                         </span>
-                        <span>Phone: {partner.phone || "Not provided"}</span>
                         {partner.created_at && (
                           <span>
                             Registered:{" "}
