@@ -30,6 +30,62 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [registrationComplete, setRegistrationComplete] = useState(false);
 
+  const [draftRestored, setDraftRestored] = useState(false);
+
+  // Restore form details if the browser reloads while selecting a document.
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem("coreone-partner-registration-draft");
+      if (saved) {
+        const draft = JSON.parse(saved);
+        if (typeof draft.fullName === "string") setFullName(draft.fullName);
+        if (typeof draft.phone === "string") setPhone(draft.phone);
+        if (typeof draft.organization === "string") setOrganization(draft.organization);
+        if (typeof draft.email === "string") setEmail(draft.email);
+        if (draft.educationLevel === "undergraduate" || draft.educationLevel === "graduate") {
+          setEducationLevel(draft.educationLevel);
+        }
+        if (typeof draft.nyscCompleted === "string") setNyscCompleted(draft.nyscCompleted);
+        if (typeof draft.age === "string") setAge(draft.age);
+        if (typeof draft.gender === "string") setGender(draft.gender);
+      }
+    } catch {
+      sessionStorage.removeItem("coreone-partner-registration-draft");
+    } finally {
+      setDraftRestored(true);
+    }
+  }, []);
+
+  // Save ordinary form details in this browser tab; never save passwords or files.
+  useEffect(() => {
+    if (!draftRestored || registrationComplete) return;
+
+    sessionStorage.setItem(
+      "coreone-partner-registration-draft",
+      JSON.stringify({
+        fullName,
+        phone,
+        organization,
+        email,
+        educationLevel,
+        nyscCompleted,
+        age,
+        gender,
+      })
+    );
+  }, [
+    draftRestored,
+    registrationComplete,
+    fullName,
+    phone,
+    organization,
+    email,
+    educationLevel,
+    nyscCompleted,
+    age,
+    gender,
+  ]);
+
   useEffect(() => {
     if (!registrationComplete) return;
     const timeout = window.setTimeout(() => router.push("/login"), 5000);
