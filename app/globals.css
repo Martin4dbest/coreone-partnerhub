@@ -1350,3 +1350,17 @@ nav a[href*="partner"] {
   width: fit-content;
   margin-top: 16px;
 }
+
+/* Move the commission tracking card slightly lower */
+.hero-visual .floating-card-bottom {
+  bottom: 10px;
+}
+
+/* Move commission tracking card further down */
+.hero-visual .floating-card-bottom {
+  bottom: -20px;
+}
+
+.hero-visual .floating-card-bottom {
+  bottom: -35px;
+}
