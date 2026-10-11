@@ -20,6 +20,7 @@ export default function RegisterPage() {
   const [educationLevel, setEducationLevel] = useState<"undergraduate" | "graduate">("undergraduate");
   const [nyscCompleted, setNyscCompleted] = useState("");
   const [age, setAge] = useState("");
+  const [ageRange, setAgeRange] = useState("");
   const [gender, setGender] = useState("");
   const [idDocument, setIdDocument] = useState<File | null>(null);
   const [ssceDocument, setSsCEdocument] = useState<File | null>(null);
@@ -47,6 +48,7 @@ export default function RegisterPage() {
         }
         if (typeof draft.nyscCompleted === "string") setNyscCompleted(draft.nyscCompleted);
         if (typeof draft.age === "string") setAge(draft.age);
+        if (typeof draft.ageRange === "string") setAgeRange(draft.ageRange);
         if (typeof draft.gender === "string") setGender(draft.gender);
       }
     } catch {
@@ -70,6 +72,7 @@ export default function RegisterPage() {
         educationLevel,
         nyscCompleted,
         age,
+        ageRange,
         gender,
       })
     );
@@ -83,6 +86,7 @@ export default function RegisterPage() {
     educationLevel,
     nyscCompleted,
     age,
+    ageRange,
     gender,
   ]);
 
@@ -116,8 +120,8 @@ export default function RegisterPage() {
       setError("Your passwords do not match.");
       return;
     }
-    if (!/^\d+$/.test(age) || Number(age) < 16 || Number(age) > 100) {
-      setError("Enter an age between 16 and 100.");
+    if (!ageRange) {
+      setError("Please select your age range.");
       return;
     }
     if (educationLevel === "graduate" && !nyscCompleted) {
@@ -151,7 +155,8 @@ export default function RegisterPage() {
             education_level: educationLevel,
             nysc_completed:
               educationLevel === "graduate" ? nyscCompleted === "yes" : null,
-            age: Number(age),
+            age_range: ageRange,
+            age: Number(ageRange === "41+" ? 41 : ageRange.split("-")[0]),
             gender,
           },
         },
@@ -279,8 +284,16 @@ export default function RegisterPage() {
                 </label>
               )}
 
-              <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">Age
-                <input className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" type="number" min={16} max={100} value={age} onChange={(e) => setAge(e.target.value)} required placeholder="Enter your age" />
+              <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">Age Range
+                <select className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" value={ageRange} onChange={(e) => setAgeRange(e.target.value)} required>
+                  <option value="">Select your age range</option>
+                  <option value="16-20">16–20 years</option>
+                  <option value="21-25">21–25 years</option>
+                  <option value="26-30">26–30 years</option>
+                  <option value="31-35">31–35 years</option>
+                  <option value="36-40">36–40 years</option>
+                  <option value="41+">41 years and above</option>
+                </select>
               </label>
 
               <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">Gender
