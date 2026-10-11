@@ -1,4 +1,5 @@
 import LivePartnerStats from "@/app/components/LivePartnerStats";
+import HeroLiveOverview from "@/app/components/HeroLiveOverview";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -106,7 +107,7 @@ export default function Home() {
 
             <div className="hero-actions">
               <Link href="/register" className="button button-gold">
-                Become a representative <Arrow />
+                Partner <Arrow />
               </Link>
               <a href="#how-it-works" className="button button-outline">
                 See how it works <span className="play-icon">↘</span>
@@ -131,42 +132,11 @@ export default function Home() {
                 <span className="panel-menu">•••</span>
               </div>
 
-              <div className="panel-stats">
-                <div className="panel-stat">
-                  <span>Schools onboarded</span>
-                  <strong>--</strong>
-                  <small><span className="stat-dot green" /> Account data</small>
-                </div>
-                <div className="panel-stat">
-                  <span>Commission earned</span>
-                  <strong>₦ --</strong>
-                  <small><span className="stat-dot gold-dot" /> Account data</small>
-                </div>
-              </div>
-
-              <div className="chart-heading">
-                <div><strong>Partner activity</strong><span>PREVIEW ONLY — NOT LIVE DATA</span></div>
-                <span className="chart-label">OVERVIEW</span>
-              </div>
-              <div className="chart-area">
-                <div className="chart-lines"><i /><i /><i /><i /></div>
-                <svg viewBox="0 0 400 128" preserveAspectRatio="none" className="chart-svg" aria-hidden="true">
-                  <defs>
-                    <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#D9A441" stopOpacity=".28" />
-                      <stop offset="100%" stopColor="#D9A441" stopOpacity="0" />
-                    </linearGradient>
-                  </defs>
-                  <path d="M0 106 C28 99 39 87 65 91 S105 67 132 77 S175 47 204 59 S245 32 275 43 S320 13 344 26 S377 12 400 5 L400 128 L0 128Z" fill="url(#chartFill)" />
-                  <path d="M0 106 C28 99 39 87 65 91 S105 67 132 77 S175 47 204 59 S245 32 275 43 S320 13 344 26 S377 12 400 5" fill="none" stroke="#D9A441" strokeWidth="3" strokeLinecap="round" />
-                  <circle cx="344" cy="26" r="5" fill="#FFFFFF" stroke="#D9A441" strokeWidth="3" />
-                </svg>
-              </div>
-              <div className="chart-months"><span>START</span><span>BUILD</span><span>GROW</span><span>EXPAND</span></div>
+              <HeroLiveOverview />
 
               <div className="panel-bottom">
                 <div className="mini-avatars"><i>C</i><i>+</i><i>+</i></div>
-                <span>Your account figures will be available when recorded data is available.</span>
+                <span>Live network figures refresh automatically from recorded database activity.</span>
               </div>
             </div>
 
@@ -350,7 +320,7 @@ export default function Home() {
           </div>
           <div className="footer-links">
             <strong>Partner access</strong>
-            <Link href="/register">Become a representative</Link>
+            <Link href="/register">Become a Partner</Link>
             <Link href="/login">Sign in</Link>
           </div>
         </div>

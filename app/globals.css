@@ -126,7 +126,7 @@ svg { display: block; width: 100%; height: 100%; }
 .mini-avatars i:nth-child(3) { background: #a3d4c1; }
 .panel-bottom > span { color: #b5c1d1; font-size: 8px; line-height: 1.5; }
 .floating-card { position: absolute; z-index: 3; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid rgba(255,255,255,.5); border-radius: 9px; background: #fff; color: var(--navy); box-shadow: 0 15px 45px rgba(0,0,0,.22); }
-.floating-card-top { top: 42px; left: -15px; }
+.floating-card-top { top: 42px; left: -65px; }
 .floating-card-bottom { right: -13px; bottom: 40px; }
 .float-icon { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 8px; padding: 8px; }
 .float-green { color: #24775f; background: #e4f4ed; }
@@ -224,7 +224,7 @@ svg { display: block; width: 100%; height: 100%; }
   .hero h1 { font-size: clamp(42px, 5vw, 57px); }
   .hero-visual { min-height: 400px; }
   .visual-panel { padding: 20px; }
-  .floating-card-top { left: -7px; }
+  .floating-card-top { left: -65px; }
   .floating-card-bottom { right: -7px; }
   .trust-inner { flex-wrap: wrap; padding-top: 20px; padding-bottom: 20px; }
   .trust-label { max-width: none; width: 100%; }
@@ -252,7 +252,7 @@ svg { display: block; width: 100%; height: 100%; }
   .hero-assurance { align-items: flex-start; font-size: 9px; line-height: 1.7; }
   .hero-visual { min-height: 380px; margin: 0 3px; }
   .visual-panel { width: min(100%, 440px); }
-  .floating-card-top { top: 15px; left: -2px; }
+  .floating-card-top { top: 15px; left: -65px; }
   .floating-card-bottom { right: -2px; bottom: 12px; }
   .hero-bottom { gap: 9px; font-size: 7px; letter-spacing: .8px; }
   .hero-bottom > span:last-child { text-align: right; }
@@ -300,7 +300,7 @@ svg { display: block; width: 100%; height: 100%; }
   .panel-stat { padding: 10px; }
   .panel-stat strong { font-size: 22px; }
   .floating-card { padding: 9px; gap: 7px; }
-  .floating-card-top { left: -3px; }
+  .floating-card-top { left: -65px; }
   .floating-card-bottom { right: -3px; }
   .float-icon { width: 29px; height: 29px; padding: 7px; }
   .floating-card strong { font-size: 9px; }
@@ -1329,4 +1329,16 @@ main h3 {
   .button-small {
     font-size: 10px;
   }
+}
+
+/* Gold text for the Become a Partner CTA */
+a[href*="partner"].become-partner,
+.become-partner {
+  color: #D4AF37;
+}
+
+/* Gold text for the top navigation Become a Partner button */
+header a[href*="partner"],
+nav a[href*="partner"] {
+  color: #D4AF37 !important;
 }
