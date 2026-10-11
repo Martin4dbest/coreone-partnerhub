@@ -9,6 +9,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -88,14 +89,25 @@ export default function LoginPage() {
 
           <label>
             Password
-            <input
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
-              type="password"
-              placeholder="Your password"
-            />
+            <div className="password-input-wrap">
+              <input
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+                type={showPassword ? "text" : "password"}
+                placeholder="Your password"
+              />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((visible) => !visible)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+              >
+                {showPassword ? "🙈" : "👁"}
+              </button>
+            </div>
           </label>
 
           <button className="auth-submit" type="submit" disabled={loading}>
