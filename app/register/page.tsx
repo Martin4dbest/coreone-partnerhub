@@ -8,54 +8,6 @@ import { supabase } from "@/src/lib/supabase/client";
 const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
 
-type RegistrationFileDraft = {
-  idDocument: File | null;
-  ssceDocument: File | null;
-  degreeDocument: File | null;
-};
-
-function openRegistrationDraftDb(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open("coreone-partner-registration", 1);
-    request.onupgradeneeded = () => {
-      if (!request.result.objectStoreNames.contains("drafts")) {
-        request.result.createObjectStore("drafts");
-      }
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function loadRegistrationFiles(): Promise<RegistrationFileDraft | null> {
-  const db = await openRegistrationDraftDb();
-  try {
-    return await new Promise((resolve, reject) => {
-      const request = db.transaction("drafts", "readonly")
-        .objectStore("drafts").get("registration-files");
-      request.onsuccess = () => resolve(request.result ?? null);
-      request.onerror = () => reject(request.error);
-    });
-  } finally {
-    db.close();
-  }
-}
-
-async function saveRegistrationFiles(files: RegistrationFileDraft): Promise<void> {
-  const db = await openRegistrationDraftDb();
-  try {
-    await new Promise<void>((resolve, reject) => {
-      const transaction = db.transaction("drafts", "readwrite");
-      transaction.objectStore("drafts").put(files, "registration-files");
-      transaction.oncomplete = () => resolve();
-      transaction.onerror = () => reject(transaction.error);
-      transaction.onabort = () => reject(transaction.error);
-    });
-  } finally {
-    db.close();
-  }
-}
-
 export default function RegisterPage() {
   const router = useRouter();
 
@@ -70,9 +22,6 @@ export default function RegisterPage() {
   const [age, setAge] = useState("");
   const [ageRange, setAgeRange] = useState("");
   const [gender, setGender] = useState("");
-  const [idDocument, setIdDocument] = useState<File | null>(null);
-  const [ssceDocument, setSsCEdocument] = useState<File | null>(null);
-  const [degreeDocument, setDegreeDocument] = useState<File | null>(null);
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -81,46 +30,31 @@ export default function RegisterPage() {
 
   const [draftRestored, setDraftRestored] = useState(false);
 
-  // Restore ordinary fields and selected documents after a mobile browser reload.
+  // Restore form details if the browser reloads.
   useEffect(() => {
-    let cancelled = false;
-
-    async function restoreDraft() {
-      try {
-        const saved = sessionStorage.getItem("coreone-partner-registration-draft");
-        if (saved) {
-          const draft = JSON.parse(saved);
-          if (typeof draft.fullName === "string") setFullName(draft.fullName);
-          if (typeof draft.phone === "string") setPhone(draft.phone);
-          if (typeof draft.organization === "string") setOrganization(draft.organization);
-          if (typeof draft.email === "string") setEmail(draft.email);
-          if (draft.educationLevel === "undergraduate" || draft.educationLevel === "graduate") {
-            setEducationLevel(draft.educationLevel);
-          }
-          if (typeof draft.nyscCompleted === "string") setNyscCompleted(draft.nyscCompleted);
-          if (typeof draft.age === "string") setAge(draft.age);
-          if (typeof draft.ageRange === "string") setAgeRange(draft.ageRange);
-          if (typeof draft.gender === "string") setGender(draft.gender);
+    try {
+      const saved = sessionStorage.getItem("coreone-partner-registration-draft");
+      if (saved) {
+        const draft = JSON.parse(saved);
+        if (typeof draft.fullName === "string") setFullName(draft.fullName);
+        if (typeof draft.phone === "string") setPhone(draft.phone);
+        if (typeof draft.organization === "string") setOrganization(draft.organization);
+        if (typeof draft.email === "string") setEmail(draft.email);
+        if (draft.educationLevel === "undergraduate" || draft.educationLevel === "graduate") {
+          setEducationLevel(draft.educationLevel);
         }
-
-        const files = await loadRegistrationFiles();
-        if (!cancelled && files) {
-          if (files.idDocument) setIdDocument(files.idDocument);
-          if (files.ssceDocument) setSsCEdocument(files.ssceDocument);
-          if (files.degreeDocument) setDegreeDocument(files.degreeDocument);
-        }
-      } catch (err) {
-        console.warn("Registration draft restoration failed:", err);
-      } finally {
-        if (!cancelled) setDraftRestored(true);
+        if (typeof draft.nyscCompleted === "string") setNyscCompleted(draft.nyscCompleted);
+        if (typeof draft.ageRange === "string") setAgeRange(draft.ageRange);
+        if (typeof draft.gender === "string") setGender(draft.gender);
       }
+    } catch (err) {
+      console.warn("Could not restore registration details:", err);
+    } finally {
+      setDraftRestored(true);
     }
-
-    void restoreDraft();
-    return () => { cancelled = true; };
   }, []);
 
-  // Save ordinary form details in this browser tab; never save passwords or files.
+  // Save ordinary form details in this browser tab; never save passwords.
   useEffect(() => {
     if (!draftRestored || registrationComplete) return;
 
@@ -152,29 +86,12 @@ export default function RegisterPage() {
     gender,
   ]);
 
-  // Save selected documents locally so they can survive a page reload.
-  useEffect(() => {
-    if (!draftRestored || registrationComplete) return;
-    void saveRegistrationFiles({ idDocument, ssceDocument, degreeDocument })
-      .catch((err) => console.warn("Could not save registration documents:", err));
-  }, [draftRestored, registrationComplete, idDocument, ssceDocument, degreeDocument]);
 
   useEffect(() => {
     if (!registrationComplete) return;
     const timeout = window.setTimeout(() => router.push("/login"), 5000);
     return () => window.clearTimeout(timeout);
   }, [registrationComplete, router]);
-
-  function validateFile(file: File | null, label: string): string | null {
-    if (!file) return `${label} is required.`;
-    if (!ACCEPTED_TYPES.includes(file.type)) {
-      return `${label} must be a PDF, JPG, or PNG file.`;
-    }
-    if (file.size > MAX_FILE_SIZE) {
-      return `${label} must not exceed 10 MB.`;
-    }
-    return null;
-  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -195,18 +112,6 @@ export default function RegisterPage() {
     }
     if (educationLevel === "graduate" && !nyscCompleted) {
       setError("Please indicate whether you have completed NYSC.");
-      return;
-    }
-
-    const fileError =
-      validateFile(idDocument, "Means of identification") ||
-      validateFile(ssceDocument, "SSCE certificate") ||
-      (educationLevel === "graduate"
-        ? validateFile(degreeDocument, "Degree certificate")
-        : null);
-
-    if (fileError) {
-      setError(fileError);
       return;
     }
 
@@ -239,45 +144,21 @@ export default function RegisterPage() {
 
       if (!data.session) {
         setMessage(
-          "Your account has been created, but your documents have NOT been uploaded yet. Please confirm your email, sign in, and complete document submission once that step is enabled. Your application is not complete."
+          "Your account has been created. Please confirm your email, then sign in to access PartnerHub. Document uploads are not required."
         );
         setRegistrationComplete(true);
         return;
       }
 
-      const userId = data.user.id;
-      const bucket = "coreone-partner-documents";
-
-      async function uploadDocument(file: File, kind: string): Promise<string> {
-        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-        const path = `${userId}/${kind}-${Date.now()}-${safeName}`;
-        const { error: uploadError } = await supabase.storage
-          .from(bucket)
-          .upload(path, file, { upsert: false, contentType: file.type });
-
-        if (uploadError) throw uploadError;
-        return path;
-      }
-
-      const idPath = await uploadDocument(idDocument!, "identification");
-      const sscePath = await uploadDocument(ssceDocument!, "ssce");
-      const degreePath =
-        educationLevel === "graduate"
-          ? await uploadDocument(degreeDocument!, "degree")
-          : null;
-
       const { error: applicationError } = await supabase
         .from("coreone_partner_applications")
         .upsert({
-          user_id: userId,
+          user_id: data.user.id,
           education_level: educationLevel,
           nysc_completed:
             educationLevel === "graduate" ? nyscCompleted === "yes" : null,
-          age: Number(age),
+          age: Number(ageRange === "41+" ? 41 : ageRange.split("-")[0]),
           gender,
-          id_document_path: idPath,
-          ssce_document_path: sscePath,
-          degree_document_path: degreePath,
           updated_at: new Date().toISOString(),
         });
 
@@ -372,23 +253,6 @@ export default function RegisterPage() {
                   <option value="female">Female</option>
                 </select>
               </label>
-
-              <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">Means of identification (required)
-                <input className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required onChange={(e) => setIdDocument(e.target.files?.[0] ?? null)} />
-                <small className="!mt-1 !block !text-[10px] !font-normal !leading-4 !text-slate-500">PDF, JPG, or PNG; maximum 10 MB.</small>
-              </label>
-
-              <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">SSCE certificate (required)
-                <input className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required onChange={(e) => setSsCEdocument(e.target.files?.[0] ?? null)} />
-                <small className="!mt-1 !block !text-[10px] !font-normal !leading-4 !text-slate-500">PDF, JPG, or PNG; maximum 10 MB.</small>
-              </label>
-
-              {educationLevel === "graduate" && (
-                <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">Degree certificate (required for graduates)
-                  <input className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" type="file" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" required onChange={(e) => setDegreeDocument(e.target.files?.[0] ?? null)} />
-                  <small className="!mt-1 !block !text-[10px] !font-normal !leading-4 !text-slate-500">PDF, JPG, or PNG; maximum 10 MB.</small>
-                </label>
-              )}
 
               <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">Password
                 <input className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} autoComplete="new-password" type="password" placeholder="At least 8 characters" />

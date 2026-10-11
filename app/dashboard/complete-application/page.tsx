@@ -5,18 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/src/lib/supabase/client";
 
-const BUCKET = "coreone-partner-documents";
-const MAX_FILE_SIZE = 10 * 1024 * 1024;
-const ACCEPTED_TYPES = ["application/pdf", "image/jpeg", "image/png"];
-
 type Application = {
   education_level: string | null;
   nysc_completed: boolean | null;
   age: number | null;
   gender: string | null;
-  id_document_path: string | null;
-  ssce_document_path: string | null;
-  degree_document_path: string | null;
 };
 
 export default function CompleteApplicationPage() {
@@ -30,9 +23,6 @@ export default function CompleteApplicationPage() {
   const [nyscCompleted, setNyscCompleted] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
-  const [idDocument, setIdDocument] = useState<File | null>(null);
-  const [ssceDocument, setSsCEdocument] = useState<File | null>(null);
-  const [degreeDocument, setDegreeDocument] = useState<File | null>(null);
   const [application, setApplication] = useState<Application | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -59,7 +49,7 @@ export default function CompleteApplicationPage() {
         const { data, error: applicationError } = await supabase
           .from("coreone_partner_applications")
           .select(
-            "education_level,nysc_completed,age,gender,id_document_path,ssce_document_path,degree_document_path"
+            "education_level,nysc_completed,age,gender"
           )
           .eq("user_id", user.id)
           .maybeSingle();
@@ -105,20 +95,6 @@ export default function CompleteApplicationPage() {
     void loadApplication();
   }, [router]);
 
-  function validateFile(file: File | null, label: string): string | null {
-    if (!file) return null;
-
-    if (!ACCEPTED_TYPES.includes(file.type)) {
-      return `${label} must be a PDF, JPG, or PNG file.`;
-    }
-
-    if (file.size > MAX_FILE_SIZE) {
-      return `${label} must not exceed 10 MB.`;
-    }
-
-    return null;
-  }
-
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
@@ -139,35 +115,6 @@ export default function CompleteApplicationPage() {
       return;
     }
 
-    const fileError =
-      validateFile(idDocument, "Means of identification") ||
-      validateFile(ssceDocument, "SSCE certificate") ||
-      validateFile(degreeDocument, "Degree certificate");
-
-    if (fileError) {
-      setError(fileError);
-      return;
-    }
-
-    if (!idDocument && !application?.id_document_path) {
-      setError("Please upload your means of identification.");
-      return;
-    }
-
-    if (!ssceDocument && !application?.ssce_document_path) {
-      setError("Please upload your SSCE certificate.");
-      return;
-    }
-
-    if (
-      educationLevel === "graduate" &&
-      !degreeDocument &&
-      !application?.degree_document_path
-    ) {
-      setError("Please upload your degree certificate.");
-      return;
-    }
-
     setSaving(true);
 
     try {
@@ -182,36 +129,6 @@ export default function CompleteApplicationPage() {
 
       const user = authData.user;
 
-      async function uploadDocument(file: File, kind: string) {
-        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
-        const path = `${user.id}/${kind}-${Date.now()}-${safeName}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from(BUCKET)
-          .upload(path, file, {
-            upsert: false,
-            contentType: file.type,
-          });
-
-        if (uploadError) throw uploadError;
-        return path;
-      }
-
-      const idPath = idDocument
-        ? await uploadDocument(idDocument, "identification")
-        : application?.id_document_path ?? null;
-
-      const sscePath = ssceDocument
-        ? await uploadDocument(ssceDocument, "ssce")
-        : application?.ssce_document_path ?? null;
-
-      const degreePath =
-        educationLevel === "graduate"
-          ? degreeDocument
-            ? await uploadDocument(degreeDocument, "degree")
-            : application?.degree_document_path ?? null
-          : application?.degree_document_path ?? null;
-
       const { error: saveError } = await supabase
         .from("coreone_partner_applications")
         .upsert(
@@ -224,9 +141,6 @@ export default function CompleteApplicationPage() {
                 : null,
             age: Number(age),
             gender,
-            id_document_path: idPath,
-            ssce_document_path: sscePath,
-            degree_document_path: degreePath,
             updated_at: new Date().toISOString(),
           },
           { onConflict: "user_id" }
@@ -248,8 +162,8 @@ export default function CompleteApplicationPage() {
 
       setMessage(
         metadataError
-          ? "Your application and documents were saved. Some profile details could not be synchronized, but your submitted application is محفوظ."
-          : "Your application details and documents have been saved successfully."
+          ? "Your application details were saved. Some profile details could not be synchronized."
+          : "Your application details have been saved successfully."
       );
     } catch (err) {
       setError(
@@ -294,9 +208,7 @@ export default function CompleteApplicationPage() {
           </h1>
           <p className="mt-1.5 break-all text-[11px] text-slate-300">{email}</p>
           <p className="mt-2 max-w-2xl text-[11px] leading-5 text-slate-300">
-            Complete any missing details and submit your supporting documents.
-            You can replace a document by selecting a new file. Your existing
-            account and representative approval status will not be changed.
+            Complete your personal and education details. Document uploads are not required. Your existing account and representative approval status will not be changed.
           </p>
         </div>
 
@@ -383,62 +295,12 @@ export default function CompleteApplicationPage() {
             </label>
           </div>
 
-          <div className="rounded-lg border border-slate-200 bg-[#fafbfd] p-3.5 transition hover:border-[#d9c28b]">
-            <h2 className="font-semibold">Means of identification</h2>
-            <p className="mt-1 text-[10px] leading-4 text-slate-500">
-              PDF, JPG or PNG; maximum 10 MB.
-              {application?.id_document_path ? " A document is already recorded." : " No document recorded yet."}
-            </p>
-            <input
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-              onChange={(event) =>
-                setIdDocument(event.target.files?.[0] ?? null)
-              }
-              className="mt-2.5 block w-full cursor-pointer text-[10px] text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-[#e9edf4] file:px-3 file:py-2 file:text-[10px] file:font-semibold file:text-[#26344b] hover:file:bg-[#dce3ee]"
-            />
-          </div>
-
-          <div className="rounded-lg border border-slate-200 bg-[#fafbfd] p-3.5 transition hover:border-[#d9c28b]">
-            <h2 className="font-semibold">SSCE certificate</h2>
-            <p className="mt-1 text-[10px] leading-4 text-slate-500">
-              PDF, JPG or PNG; maximum 10 MB.
-              {application?.ssce_document_path ? " A document is already recorded." : " No document recorded yet."}
-            </p>
-            <input
-              type="file"
-              accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-              onChange={(event) =>
-                setSsCEdocument(event.target.files?.[0] ?? null)
-              }
-              className="mt-2.5 block w-full cursor-pointer text-[10px] text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-[#e9edf4] file:px-3 file:py-2 file:text-[10px] file:font-semibold file:text-[#26344b] hover:file:bg-[#dce3ee]"
-            />
-          </div>
-
-          {educationLevel === "graduate" && (
-            <div className="rounded-lg border border-slate-200 bg-[#fafbfd] p-3.5 transition hover:border-[#d9c28b]">
-              <h2 className="font-semibold">Degree certificate</h2>
-              <p className="mt-1 text-[10px] leading-4 text-slate-500">
-                PDF, JPG or PNG; maximum 10 MB.
-                {application?.degree_document_path ? " A document is already recorded." : " No document recorded yet."}
-              </p>
-              <input
-                type="file"
-                accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-                onChange={(event) =>
-                  setDegreeDocument(event.target.files?.[0] ?? null)
-                }
-                className="mt-2.5 block w-full cursor-pointer text-[10px] text-slate-600 file:mr-3 file:rounded-md file:border-0 file:bg-[#e9edf4] file:px-3 file:py-2 file:text-[10px] file:font-semibold file:text-[#26344b] hover:file:bg-[#dce3ee]"
-              />
-            </div>
-          )}
-
           <button
             type="submit"
             disabled={saving}
             className="w-full rounded-md bg-[#14213a] px-4 py-2.5 text-[11px] font-semibold text-white shadow-sm transition hover:bg-[#233958] focus:outline-none focus:ring-2 focus:ring-[#b08a3e] focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
           >
-            {saving ? "Saving application..." : "Save application and documents"}
+            {saving ? "Saving application..." : "Save application details"}
           </button>
         </form>
       </section>

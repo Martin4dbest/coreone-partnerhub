@@ -10,9 +10,6 @@ type Application = {
   nysc_completed?: boolean | null;
   age?: number | null;
   gender?: string;
-  id_document_path?: string;
-  ssce_document_path?: string;
-  degree_document_path?: string | null;
 };
 
 type Registration = {
@@ -46,7 +43,6 @@ type Partner = {
   created_at?: string;
   registration_details?: Registration;
   application_details?: Application | null;
-  document_urls?: Record<string, string>;
   [key: string]: unknown;
 };
 
@@ -102,33 +98,7 @@ export default function RepresentativesPage() {
           ? [data as Partner]
           : [];
 
-      const withDocuments = await Promise.all(
-        rows.map(async (partner) => {
-          const app = partner.application_details;
-          const documentUrls: Record<string, string> = {};
-
-          const documents = [
-            ["Identification document", app?.id_document_path],
-            ["SSCE certificate", app?.ssce_document_path],
-            ["Degree certificate", app?.degree_document_path],
-          ] as const;
-
-          for (const [label, path] of documents) {
-            if (!path) continue;
-            const { data: signed, error: signedError } = await supabase.storage
-              .from("coreone-partner-documents")
-              .createSignedUrl(path, 600);
-
-            if (!signedError && signed?.signedUrl) {
-              documentUrls[label] = signed.signedUrl;
-            }
-          }
-
-          return { ...partner, document_urls: documentUrls };
-        })
-      );
-
-      setPartners(withDocuments);
+      setPartners(rows);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Unable to load representatives.");
     } finally {
@@ -182,7 +152,7 @@ export default function RepresentativesPage() {
               Registered Representatives
             </h1>
             <p className="mt-2 text-[12px] text-slate-600">
-              Review submitted personal, education and document details before making an approval decision.
+              Review representatives’ personal and education details before making an approval decision.
             </p>
           </div>
           <button
@@ -271,34 +241,6 @@ export default function RepresentativesPage() {
                     <div><dt className="text-[10px] font-semibold text-slate-500">Registered</dt><dd className="mt-0.5">{p.created_at ? new Date(p.created_at).toLocaleString() : "Not available"}</dd></div>
                   </dl>
 
-                  <h3 className="mt-5 border-b border-slate-100 pb-2 text-[11px] font-extrabold uppercase tracking-wide text-slate-500">
-                    Submitted documents
-                  </h3>
-                  <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
-                    {(["Identification document", "SSCE certificate", "Degree certificate"] as const).map((label) => {
-                      const url = p.document_urls?.[label];
-                      const hasPath =
-                        label === "Identification document" ? !!application?.id_document_path :
-                        label === "SSCE certificate" ? !!application?.ssce_document_path :
-                        !!application?.degree_document_path;
-
-                      return hasPath && url ? (
-                        <a
-                          key={label}
-                          href={url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 font-semibold text-amber-900 hover:bg-amber-100"
-                        >
-                          View {label} ↗
-                        </a>
-                      ) : (
-                        <span key={label} className="rounded-lg bg-slate-100 px-3 py-2 text-slate-500">
-                          {label}: {hasPath ? "Link unavailable" : "Not submitted"}
-                        </span>
-                      );
-                    })}
-                  </div>
 
                   {id ? (
                     <Link
