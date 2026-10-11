@@ -251,8 +251,11 @@ export default function RegisterPage() {
                 <input className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" value={phone} onChange={(e) => setPhone(e.target.value)} required autoComplete="tel" type="tel" placeholder="e.g. 08012345678" />
               </label>
 
-              <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">Organization (optional)
-                <input className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" value={organization} onChange={(e) => setOrganization(e.target.value)} autoComplete="organization" placeholder="Company or organization" />
+              <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">Organization
+                <select className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" value={organization} onChange={(e) => setOrganization(e.target.value)} required>
+                  <option value="">Select your organization</option>
+                  <option value="CoreOne Enterprise Solutions">CoreOne Enterprise Solutions</option>
+                </select>
               </label>
 
               <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">Email address
