@@ -96,6 +96,10 @@ export default function Home() {
         <div className="container hero-grid">
           <div className="hero-content">
             <div className="eyebrow"><span /> THE COREONE PARTNER NETWORK</div>
+            <div className="floating-card floating-card-top">
+              <span className="float-icon float-green"><SchoolIcon /></span>
+              <span><small>School partnerships</small><strong>Built on trust</strong></span>
+            </div>
             <h1>
               Turn your connections into <span className="gold-text">opportunity.</span>
             </h1>
@@ -140,10 +144,6 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="floating-card floating-card-top">
-              <span className="float-icon float-green"><SchoolIcon /></span>
-              <span><small>School partnerships</small><strong>Built on trust</strong></span>
-            </div>
             <div className="floating-card floating-card-bottom">
               <span className="float-icon float-gold"><WalletIcon /></span>
               <span><small>Commission tracking</small><strong>Clear and transparent</strong></span>

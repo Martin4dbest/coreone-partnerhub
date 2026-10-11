@@ -1342,3 +1342,11 @@ header a[href*="partner"],
 nav a[href*="partner"] {
   color: #D4AF37 !important;
 }
+
+
+/* School partnership card sits directly below the hero eyebrow */
+.hero-content > .floating-card-top {
+  position: static;
+  width: fit-content;
+  margin-top: 16px;
+}
