@@ -67,7 +67,7 @@ export default function CommissionTiersPage() {
 
   return (
     <main className="mx-auto max-w-5xl p-4 sm:p-8">
-      <h1 className="text-2xl font-bold">Commission Tiers</h1>
+      <h1 className="text-xl font-bold">Commission Tiers</h1>
       <p className="my-2 text-sm text-gray-600">
         Set the commission amount for each confirmed student-count range.
         Amounts are in Nigerian naira (NGN).
@@ -99,7 +99,7 @@ export default function CommissionTiersPage() {
             </label>
             <button disabled={busy}
               onClick={() => save(t)}
-              className="rounded bg-blue-700 px-4 py-2 text-white disabled:opacity-50">
+              className="rounded bg-green-600 px-4 py-2 text-white hover:bg-green-700 disabled:opacity-50">
               Save
             </button>
           </section>
