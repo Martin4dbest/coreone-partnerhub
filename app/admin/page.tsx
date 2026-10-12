@@ -125,11 +125,23 @@ export default function AdminPage() {
 
       setMessage(`Partner application ${status} successfully.`);
       await loadPartners();
-    } catch (err) {
+    } catch (err: unknown) {
+      const dbError = err as {
+        message?: string;
+        details?: string;
+        hint?: string;
+        code?: string;
+      };
+
       setError(
-        err instanceof Error
-          ? err.message
-          : "The application status could not be updated."
+        [
+          dbError.message || "Unknown approval error",
+          dbError.details,
+          dbError.hint,
+          dbError.code ? `Code: ${dbError.code}` : undefined,
+        ]
+          .filter(Boolean)
+          .join(" — ")
       );
     } finally {
       setWorkingId("");
