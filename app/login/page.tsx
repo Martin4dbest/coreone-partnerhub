@@ -31,6 +31,50 @@ export default function LoginPage() {
         throw new Error("Sign-in succeeded, but no user account was returned.");
       }
 
+      // Finalize the partner application after email confirmation and sign-in.
+      // Only accounts carrying partner registration metadata are processed.
+      const metadata = data.user.user_metadata ?? {};
+      const educationLevel = metadata.education_level;
+
+      if (
+        educationLevel === "undergraduate" ||
+        educationLevel === "graduate"
+      ) {
+        const ageValue = Number(metadata.age);
+        const { error: applicationError } = await supabase
+          .from("coreone_partner_applications")
+          .upsert(
+            {
+              user_id: data.user.id,
+              education_level: educationLevel,
+              nysc_completed:
+                educationLevel === "graduate"
+                  ? metadata.nysc_completed === true
+                  : null,
+              age:
+                Number.isFinite(ageValue) && ageValue > 0
+                  ? ageValue
+                  : null,
+              gender:
+                typeof metadata.gender === "string"
+                  ? metadata.gender
+                  : null,
+              updated_at: new Date().toISOString(),
+            },
+            { onConflict: "user_id" }
+          );
+
+        if (applicationError) {
+          console.error(
+            "Partner application could not be saved:",
+            applicationError
+          );
+          throw new Error(
+            "You are signed in, but your application details could not be saved. Please contact support before continuing."
+          );
+        }
+      }
+
       // Determine administrator access from the server-side Supabase allowlist.
       const { data: isAdmin, error: adminError } = await supabase.rpc(
         "is_coreone_partnerhub_admin"

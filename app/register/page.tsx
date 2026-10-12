@@ -13,6 +13,9 @@ export default function RegisterPage() {
 
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
+  const [address, setAddress] = useState("");
   const [organization, setOrganization] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,6 +43,9 @@ export default function RegisterPage() {
         const draft = JSON.parse(saved);
         if (typeof draft.fullName === "string") setFullName(draft.fullName);
         if (typeof draft.phone === "string") setPhone(draft.phone);
+        if (typeof draft.state === "string") setState(draft.state);
+        if (typeof draft.city === "string") setCity(draft.city);
+        if (typeof draft.address === "string") setAddress(draft.address);
         if (typeof draft.organization === "string") setOrganization(draft.organization);
         if (typeof draft.email === "string") setEmail(draft.email);
         if (draft.educationLevel === "undergraduate" || draft.educationLevel === "graduate") {
@@ -65,6 +71,9 @@ export default function RegisterPage() {
       JSON.stringify({
         fullName,
         phone,
+        state,
+        city,
+        address,
         organization,
         email,
         educationLevel,
@@ -79,6 +88,9 @@ export default function RegisterPage() {
     registrationComplete,
     fullName,
     phone,
+    state,
+    city,
+    address,
     organization,
     email,
     educationLevel,
@@ -91,7 +103,7 @@ export default function RegisterPage() {
 
   useEffect(() => {
     if (!registrationComplete) return;
-    const timeout = window.setTimeout(() => router.push("/login"), 5000);
+    const timeout = window.setTimeout(() => router.push("/login"), 8000);
     return () => window.clearTimeout(timeout);
   }, [registrationComplete, router]);
 
@@ -127,6 +139,9 @@ export default function RegisterPage() {
           data: {
             full_name: fullName.trim(),
             phone: phone.trim(),
+            state: state.trim(),
+            city: city.trim(),
+            address: address.trim(),
             organization: organization.trim(),
             education_level: educationLevel,
             nysc_completed:
@@ -146,7 +161,7 @@ export default function RegisterPage() {
 
       if (!data.session) {
         setMessage(
-          "Your account has been created. Please confirm your email, then sign in to access PartnerHub. Document uploads are not required."
+          "Your account has been created. Please confirm your email, then sign in to complete the saving of your application details. Your application remains subject to administrator approval."
         );
         setRegistrationComplete(true);
         return;
@@ -206,6 +221,18 @@ export default function RegisterPage() {
 
               <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">Phone number
                 <input className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" value={phone} onChange={(e) => setPhone(e.target.value)} required autoComplete="tel" type="tel" placeholder="e.g. 08012345678" />
+              </label>
+
+              <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">State
+                <input className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" value={state} onChange={(e) => setState(e.target.value)} required autoComplete="address-level1" placeholder="Enter your state" />
+              </label>
+
+              <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">City
+                <input className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" value={city} onChange={(e) => setCity(e.target.value)} required autoComplete="address-level2" placeholder="Enter your city" />
+              </label>
+
+              <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700 sm:!col-span-2">Address
+                <textarea className="!mt-1.5 !block !w-full !min-w-0 !rounded-lg !border !border-slate-200 !bg-slate-50/70 !px-3 !py-2.5 !text-[12px] !font-normal !text-slate-800 !outline-none transition placeholder:!text-slate-400 focus:!border-teal-600 focus:!bg-white focus:!ring-2 focus:!ring-teal-600/10" value={address} onChange={(e) => setAddress(e.target.value)} required autoComplete="street-address" rows={2} placeholder="Enter your residential address" />
               </label>
 
               <label className="!mb-0 !block !text-[12px] !font-semibold !leading-5 !text-slate-700">Organization

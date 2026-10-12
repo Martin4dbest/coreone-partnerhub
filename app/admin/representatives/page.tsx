@@ -15,6 +15,9 @@ type Application = {
 type Registration = {
   full_name?: string;
   phone?: string;
+  state?: string;
+  city?: string;
+  address?: string;
   organization?: string;
   education_level?: string;
   nysc_completed?: string | boolean | null;
@@ -45,6 +48,16 @@ type Partner = {
   application_details?: Application | null;
   [key: string]: unknown;
 };
+
+function locationValue(primary: unknown, registered: unknown) {
+  const candidates = [registered, primary];
+  for (const candidate of candidates) {
+    if (typeof candidate !== "string" || !candidate.trim()) continue;
+    if (["approved", "pending", "rejected"].includes(candidate.trim().toLowerCase())) continue;
+    return candidate.trim();
+  }
+  return undefined;
+}
 
 function partnerName(p: Partner) {
   return p.registration_details?.full_name?.trim() ||
@@ -197,7 +210,7 @@ export default function RepresentativesPage() {
               const id = p.id || p.user_id;
               const registration = p.registration_details;
               const application = p.application_details;
-              const status = String(p.application_status || p.status || p.state || "pending");
+              const status = String(p.application_status || p.approval_status || p.status || "pending");
               const organization =
                 registration?.organization ||
                 p.organization ||
@@ -226,9 +239,9 @@ export default function RepresentativesPage() {
                     <div><dt className="text-[10px] font-semibold text-slate-500">Organization</dt><dd className="mt-0.5 break-words">{display(organization)}</dd></div>
                     <div><dt className="text-[10px] font-semibold text-slate-500">Age</dt><dd className="mt-0.5">{display(application?.age ?? registration?.age)}</dd></div>
                     <div><dt className="text-[10px] font-semibold text-slate-500">Gender</dt><dd className="mt-0.5 capitalize">{display(application?.gender || registration?.gender)}</dd></div>
-                    <div><dt className="text-[10px] font-semibold text-slate-500">State</dt><dd className="mt-0.5">{display(p.state)}</dd></div>
-                    <div><dt className="text-[10px] font-semibold text-slate-500">City</dt><dd className="mt-0.5">{display(p.city)}</dd></div>
-                    <div className="sm:col-span-2"><dt className="text-[10px] font-semibold text-slate-500">Address</dt><dd className="mt-0.5 break-words">{display(p.address)}</dd></div>
+                    <div><dt className="text-[10px] font-semibold text-slate-500">State</dt><dd className="mt-0.5">{display(locationValue(p.state, registration?.state))}</dd></div>
+                    <div><dt className="text-[10px] font-semibold text-slate-500">City</dt><dd className="mt-0.5">{display(locationValue(p.city, registration?.city))}</dd></div>
+                    <div className="sm:col-span-2"><dt className="text-[10px] font-semibold text-slate-500">Address</dt><dd className="mt-0.5 break-words">{display(locationValue(p.address, registration?.address))}</dd></div>
                   </dl>
 
                   <h3 className="mt-5 border-b border-slate-100 pb-2 text-[11px] font-extrabold uppercase tracking-wide text-slate-500">
