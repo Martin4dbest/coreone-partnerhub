@@ -26,10 +26,7 @@ export default function LivePartnerStats() {
 
   const loadCounts = useCallback(async () => {
     const [profiles, referrals, leaderboard] = await Promise.all([
-      supabase
-        .from("partner_profiles")
-        .select("*", { count: "exact", head: true })
-        .eq("application_status", "approved"),
+      supabase.rpc("coreone_partnerhub_public_approved_partner_count"),
 
       supabase.rpc("coreone_partnerhub_public_referral_count"),
 
@@ -44,7 +41,12 @@ export default function LivePartnerStats() {
     setMetrics([
       {
         label: "Approved partners",
-        count: profiles.error ? null : profiles.count,
+        count:
+          profiles.error ||
+          profiles.data == null ||
+          !Number.isFinite(Number(profiles.data))
+            ? null
+            : Number(profiles.data),
       },
       {
         label: "School referrals",
