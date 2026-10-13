@@ -182,7 +182,7 @@ export default function RegisterPage() {
       if (applicationError) throw applicationError;
 
       setMessage(
-        "Your account and application details have been submitted. Your documents were uploaded successfully. CoreOne will review your application before approval."
+        "Application received and under review. You can log in now and wait for administrator approval to access your partner features."
       );
       setRegistrationComplete(true);
     } catch (err) {
