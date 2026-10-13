@@ -161,7 +161,7 @@ export default function RegisterPage() {
 
       if (!data.session) {
         setMessage(
-          "Your account has been created. Please confirm your email, then sign in to complete the saving of your application details. Your application remains subject to administrator approval."
+          "Registration successful! You can proceed to log in using your email and password. Please wait for an administrator to approve your application before accessing your partner features."
         );
         setRegistrationComplete(true);
         return;
@@ -292,7 +292,7 @@ export default function RegisterPage() {
               </label>
 
               <p className="auth-small sm:!col-span-2 !rounded-lg !border !border-teal-100 !bg-teal-50/70 !px-3 !py-3 !text-[11px] !leading-5 !text-slate-600">
-                Your application is subject to CoreOne review. Documents are intended for private storage and must not be shared through public links.
+                Your application is subject to CoreOne review.
               </p>
 
               <button className="auth-submit sm:!col-span-2 !w-full !rounded-lg !bg-[#123b49] !px-4 !py-3 !text-[12px] !font-bold !text-white !shadow-sm !transition hover:!bg-[#185b5a] disabled:!cursor-not-allowed disabled:!opacity-60" type="submit" disabled={loading}>
