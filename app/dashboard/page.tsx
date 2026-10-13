@@ -179,7 +179,7 @@ export default function DashboardPage() {
       );
     }
 
-    const [referralResult, commissionResult] = await Promise.all([
+    const [referralResult, commissionResult, payoutResult] = await Promise.all([
       supabase
         .from("coreone_partner_referrals")
         .select("id,stage", { count: "exact" })
@@ -187,16 +187,23 @@ export default function DashboardPage() {
 
       supabase
         .from("coreone_partner_commissions")
+        .select("amount")
+        .eq("partner_id", user.id),
+
+      supabase
+        .from("coreone_partner_payouts")
         .select("amount,status")
         .eq("partner_id", user.id),
     ]);
 
-    if (referralResult.error || commissionResult.error) {
+    if (referralResult.error || commissionResult.error || payoutResult.error) {
       console.error("Partner dashboard data query failed:", {
         referrals: referralResult.error,
         commissions: commissionResult.error,
+        payouts: payoutResult.error,
         userId: user.id,
       });
+
       setMessage(
         "Some dashboard figures could not be loaded. Please refresh; if the issue continues, contact CoreOne Partner Support."
       );
@@ -204,14 +211,18 @@ export default function DashboardPage() {
 
     const referrals = referralResult.data ?? [];
     const commissions = commissionResult.data ?? [];
+    const payouts = payoutResult.data ?? [];
 
     setStats({
       referrals: referralResult.count ?? referrals.length,
       onboarded: referrals.filter((r) => r.stage === "onboarded").length,
-      total: commissions.reduce((sum, c) => sum + Number(c.amount || 0), 0),
-      paid: commissions
-        .filter((c) => String(c.status).toLowerCase() === "paid")
-        .reduce((sum, c) => sum + Number(c.amount || 0), 0),
+      total: commissions.reduce(
+        (sum, c) => sum + Number(c.amount || 0),
+        0
+      ),
+      paid: payouts
+        .filter((p) => String(p.status).toLowerCase() === "paid")
+        .reduce((sum, p) => sum + Number(p.amount || 0), 0),
     });
 
     await loadPhoto(user.id);
