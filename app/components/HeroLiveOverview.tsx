@@ -6,15 +6,7 @@ import { supabase } from "@/src/lib/supabase/client";
 type Overview = {
   total_referrals: number | string;
   onboarded_schools: number | string;
-  commission_earned: number | string;
 };
-
-const money = (amount: number) =>
-  new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    maximumFractionDigits: 0,
-  }).format(amount);
 
 export default function HeroLiveOverview() {
   const [data, setData] = useState<Overview | null>(null);
@@ -26,6 +18,7 @@ export default function HeroLiveOverview() {
     );
 
     if (error || !Array.isArray(rows) || !rows[0]) {
+      console.error("Partner overview RPC failed:", error ?? "No data returned");
       setUnavailable(true);
       return;
     }
@@ -36,13 +29,16 @@ export default function HeroLiveOverview() {
 
   useEffect(() => {
     void refresh();
-    const timer = window.setInterval(() => void refresh(), 30000);
+
+    const timer = window.setInterval(() => {
+      void refresh();
+    }, 30000);
+
     return () => window.clearInterval(timer);
   }, [refresh]);
 
   const referrals = Number(data?.total_referrals ?? 0);
   const onboarded = Number(data?.onboarded_schools ?? 0);
-  const commission = Number(data?.commission_earned ?? 0);
   const progress =
     referrals > 0 ? Math.min(100, (onboarded / referrals) * 100) : 0;
 
@@ -57,15 +53,6 @@ export default function HeroLiveOverview() {
           <small>
             <span className="stat-dot green" />
             {unavailable ? "Data unavailable" : "Live network total"}
-          </small>
-        </div>
-
-        <div className="panel-stat">
-          <span>Commission earned</span>
-          <strong>{data ? money(commission) : "₦ —"}</strong>
-          <small>
-            <span className="stat-dot gold-dot" />
-            Approved and paid NGN
           </small>
         </div>
       </div>
