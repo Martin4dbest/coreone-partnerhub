@@ -17,7 +17,7 @@ const chartColors = ["#D9A441", "#147D73", "#4778C7", "#8B5CF6", "#E8794A"];
 
 export default function LivePartnerStats() {
   const [metrics, setMetrics] = useState<Metric[]>([
-    { label: "Partner applications", count: null },
+    { label: "Approved partners", count: null },
     { label: "School referrals", count: null },
   ]);
   const [leaders, setLeaders] = useState<Leader[]>([]);
@@ -28,7 +28,8 @@ export default function LivePartnerStats() {
     const [profiles, referrals, leaderboard] = await Promise.all([
       supabase
         .from("partner_profiles")
-        .select("*", { count: "exact", head: true }),
+        .select("*", { count: "exact", head: true })
+        .eq("application_status", "approved"),
 
       supabase.rpc("coreone_partnerhub_public_referral_count"),
 
@@ -42,7 +43,7 @@ export default function LivePartnerStats() {
 
     setMetrics([
       {
-        label: "Partner applications",
+        label: "Approved partners",
         count: profiles.error ? null : profiles.count,
       },
       {
