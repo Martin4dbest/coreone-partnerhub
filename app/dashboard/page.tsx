@@ -175,7 +175,7 @@ export default function DashboardPage() {
       );
 
       setStatus(
-        profileText(profile, ["status", "state"]).toLowerCase() || "pending"
+        profileText(profile, ["application_status", "status", "state"]).toLowerCase() || "pending"
       );
     }
 
