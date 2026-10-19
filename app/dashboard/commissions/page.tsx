@@ -63,7 +63,7 @@ export default function CommissionsPage() {
       .maybeSingle();
 
     const status = String(
-      profile?.status ?? profile?.state ?? "pending"
+      profile?.application_status ?? profile?.status ?? profile?.state ?? "pending"
     ).toLowerCase();
 
     if (!["approved", "active"].includes(status)) {
