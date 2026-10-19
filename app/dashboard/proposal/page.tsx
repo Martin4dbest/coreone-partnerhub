@@ -12,6 +12,8 @@ type Proposal = {
   published: boolean;
   created_at: string;
   updated_at: string;
+  attachment_path: string | null;
+  attachment_name: string | null;
 };
 
 type Decision = {
@@ -21,6 +23,8 @@ type Decision = {
   decision: "accepted" | "rejected";
   responded_at: string;
 };
+
+const BUCKET = "coreone-proposals";
 
 function dateLabel(value: string) {
   const date = new Date(value);
@@ -44,6 +48,7 @@ export default function RepresentativeProposalPage() {
   const [proposals, setProposals] = useState<Proposal[]>([]);
   const [decisions, setDecisions] = useState<Record<string, Decision>>({});
   const [workingId, setWorkingId] = useState("");
+  const [openingPdfId, setOpeningPdfId] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
@@ -83,7 +88,6 @@ export default function RepresentativeProposalPage() {
         .toLowerCase();
 
       const isApproved = ["approved", "active"].includes(status);
-
       setApproved(isApproved);
 
       if (!isApproved) {
@@ -134,6 +138,44 @@ export default function RepresentativeProposalPage() {
   useEffect(() => {
     void loadData();
   }, [loadData]);
+
+  async function openPdf(proposal: Proposal) {
+    if (!approved || !proposal.attachment_path) return;
+
+    setOpeningPdfId(proposal.id);
+    setError("");
+    setMessage("");
+
+    // Open a window immediately so browser popup blockers are less likely
+    // to block the signed PDF link generated below.
+    const pdfWindow = window.open("about:blank", "_blank");
+
+    try {
+      const { data, error: signedUrlError } = await supabase.storage
+        .from(BUCKET)
+        .createSignedUrl(proposal.attachment_path, 300, {
+          download: proposal.attachment_name || true,
+        });
+
+      if (signedUrlError) throw signedUrlError;
+      if (!data?.signedUrl) throw new Error("Unable to generate the PDF link.");
+
+      if (pdfWindow) {
+        pdfWindow.location.href = data.signedUrl;
+      } else {
+        window.location.assign(data.signedUrl);
+      }
+    } catch (err) {
+      pdfWindow?.close();
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to open the PDF. Please try again."
+      );
+    } finally {
+      setOpeningPdfId("");
+    }
+  }
 
   async function respond(
     proposal: Proposal,
@@ -221,15 +263,16 @@ export default function RepresentativeProposalPage() {
           </h1>
 
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-300">
-            Review proposals published by CoreOne and record your decision.
-            Your response will be available to the administration team.
+            Review proposals and attached PDF agreements published by CoreOne,
+            then record your decision. Your response will be available to the
+            administration team.
           </p>
         </header>
 
         {error && (
           <div
             role="alert"
-            className="mt-5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800"
+            className="mt-5 break-words rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800"
           >
             {error}
           </div>
@@ -245,14 +288,10 @@ export default function RepresentativeProposalPage() {
         )}
 
         {loading ? (
-          <p className="py-10 text-sm text-slate-500">
-            Loading proposals...
-          </p>
+          <p className="py-10 text-sm text-slate-500">Loading proposals...</p>
         ) : !approved ? (
           <section className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-5">
-            <h2 className="font-bold text-amber-900">
-              Approval required
-            </h2>
+            <h2 className="font-bold text-amber-900">Approval required</h2>
 
             <p className="mt-2 text-sm leading-6 text-amber-900">
               Proposal responses are available only to approved or active
@@ -265,8 +304,8 @@ export default function RepresentativeProposalPage() {
             <h2 className="font-bold">No published proposals yet</h2>
 
             <p className="mt-2 text-sm leading-6 text-slate-600">
-              There are currently no published proposals available for
-              review. Please check again later.
+              There are currently no published proposals available for review.
+              Please check again later.
             </p>
           </section>
         ) : (
@@ -274,6 +313,7 @@ export default function RepresentativeProposalPage() {
             {proposals.map((proposal) => {
               const response = decisions[proposal.id];
               const isWorking = workingId === proposal.id;
+              const isOpeningPdf = openingPdfId === proposal.id;
 
               return (
                 <article
@@ -310,6 +350,29 @@ export default function RepresentativeProposalPage() {
                     {proposal.body}
                   </div>
 
+                  {proposal.attachment_path && (
+                    <div className="mt-5 rounded-xl border border-blue-100 bg-blue-50 p-4">
+                      <p className="text-sm font-semibold text-blue-950">
+                        Attached PDF agreement
+                      </p>
+                      <p className="mt-1 break-all text-sm text-blue-800">
+                        {proposal.attachment_name || "Proposal attachment.pdf"}
+                      </p>
+                      <button
+                        type="button"
+                        disabled={isOpeningPdf}
+                        onClick={() => void openPdf(proposal)}
+                        className="mt-3 rounded-lg bg-[#192840] px-4 py-2.5 text-sm font-bold text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {isOpeningPdf ? "Preparing PDF..." : "View / Download PDF"}
+                      </button>
+                      <p className="mt-2 text-xs leading-5 text-blue-800">
+                        The secure PDF link expires after five minutes. Request
+                        a new link if it expires.
+                      </p>
+                    </div>
+                  )}
+
                   <p className="mt-5 text-xs text-slate-500">
                     Last updated{" "}
                     {dateLabel(proposal.updated_at || proposal.created_at)}
@@ -317,8 +380,7 @@ export default function RepresentativeProposalPage() {
 
                   {response && (
                     <p className="mt-2 text-xs text-slate-500">
-                      Your last response:{" "}
-                      {dateLabel(response.responded_at)}
+                      Your last response: {dateLabel(response.responded_at)}
                     </p>
                   )}
 
