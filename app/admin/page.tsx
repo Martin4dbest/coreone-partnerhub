@@ -396,6 +396,7 @@ export default function AdminPage() {
               >
                 Commission Tiers <span className="ml-2" aria-hidden="true">→</span>
               </Link>
+              <Link href="/admin/proposals" className="inline-flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-5 py-3 text-sm font-bold text-rose-800 transition hover:bg-rose-100">Proposals &amp; Responses <span className="ml-2" aria-hidden="true">→</span></Link>
             </div>
           </div>
         </section>
