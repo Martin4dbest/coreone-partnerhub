@@ -77,7 +77,11 @@ export default function PartnerReferralsPage() {
     }
 
     const status = String(
-      profile?.status ?? profile?.state ?? "pending"
+      profile?.application_status ??
+      profile?.approval_status ??
+      profile?.status ??
+      profile?.state ??
+      "pending"
     ).toLowerCase();
 
     if (!["approved", "active"].includes(status)) {
@@ -150,7 +154,11 @@ export default function PartnerReferralsPage() {
       .maybeSingle();
 
     const status = String(
-      profile?.status ?? profile?.state ?? "pending"
+      profile?.application_status ??
+      profile?.approval_status ??
+      profile?.status ??
+      profile?.state ??
+      "pending"
     ).toLowerCase();
 
     if (profileError || !["approved", "active"].includes(status)) {
