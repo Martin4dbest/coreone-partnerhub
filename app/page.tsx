@@ -1,4 +1,5 @@
 import LivePartnerStats from "@/app/components/LivePartnerStats";
+import PublicResources from "@/app/components/PublicResources";
 import HeroLiveOverview from "@/app/components/HeroLiveOverview";
 import Link from "next/link";
 import Image from "next/image";
@@ -170,6 +171,7 @@ export default function Home() {
       </section>
 
       <LivePartnerStats />
+      <PublicResources />
 
       <section className="section benefits-section" id="benefits">
         <div className="container">

@@ -271,6 +271,7 @@ export default function AdminPage() {
               </p>
             </div>
             <div className="mt-5 flex shrink-0 flex-wrap gap-3 sm:mt-0">
+              <Link href="/admin/resources" className="inline-flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-5 py-3 text-sm font-bold text-rose-800 transition hover:bg-rose-100">CoreOne Resources <span className="ml-2" aria-hidden="true">→</span></Link>
               <Link
                 href="/admin/referrals"
                 className="inline-flex items-center justify-center rounded-xl bg-rose-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-rose-700"
