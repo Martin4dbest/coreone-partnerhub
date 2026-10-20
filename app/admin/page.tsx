@@ -259,6 +259,42 @@ export default function AdminPage() {
           </article>
         </section>
 
+        <section className="mt-8">
+          <div className="rounded-2xl border border-rose-200 bg-white p-6 shadow-sm sm:flex sm:items-center sm:justify-between sm:gap-6">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-wide text-rose-700">Administration</p>
+              <h2 className="mt-2 text-xl font-extrabold tracking-tight text-slate-900">
+                Referral, Commission &amp; Payout Management
+              </h2>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                Manage school referrals, update onboarding progress, record commissions after successful onboarding, and review representative payout requests.
+              </p>
+            </div>
+            <div className="mt-5 flex shrink-0 flex-wrap gap-3 sm:mt-0">
+              <Link
+                href="/admin/referrals"
+                className="inline-flex items-center justify-center rounded-xl bg-rose-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-rose-700"
+              >
+                Manage referrals <span className="ml-2" aria-hidden="true">→</span>
+              </Link>
+              <Link
+                href="/admin/admins"
+                className="inline-flex items-center justify-center rounded-xl bg-amber-500 px-4 py-3 text-xs font-bold text-slate-950 transition hover:bg-amber-400"
+              >
+                Manage administrators <span className="ml-2" aria-hidden="true">→</span>
+              </Link>
+              <Link
+                href="/admin/commission-tiers"
+                className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-800 transition hover:bg-slate-50"
+              >
+                Commission Tiers <span className="ml-2" aria-hidden="true">→</span>
+              </Link>
+              <Link href="/admin/proposals" className="inline-flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-5 py-3 text-sm font-bold text-rose-800 transition hover:bg-rose-100">Proposals &amp; Responses <span className="ml-2" aria-hidden="true">→</span></Link>
+            </div>
+          </div>
+        </section>
+
+
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
           <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200 p-5">
             <div>
@@ -364,41 +400,6 @@ export default function AdminPage() {
               })}
             </div>
           )}
-        </section>
-
-        <section className="mt-8">
-          <div className="rounded-2xl border border-rose-200 bg-white p-6 shadow-sm sm:flex sm:items-center sm:justify-between sm:gap-6">
-            <div>
-              <p className="text-sm font-bold uppercase tracking-wide text-rose-700">Administration</p>
-              <h2 className="mt-2 text-xl font-extrabold tracking-tight text-slate-900">
-                Referral, Commission &amp; Payout Management
-              </h2>
-              <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-                Manage school referrals, update onboarding progress, record commissions after successful onboarding, and review representative payout requests.
-              </p>
-            </div>
-            <div className="mt-5 flex shrink-0 flex-wrap gap-3 sm:mt-0">
-              <Link
-                href="/admin/referrals"
-                className="inline-flex items-center justify-center rounded-xl bg-rose-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-rose-700"
-              >
-                Manage referrals <span className="ml-2" aria-hidden="true">→</span>
-              </Link>
-              <Link
-                href="/admin/admins"
-                className="inline-flex items-center justify-center rounded-xl bg-amber-500 px-4 py-3 text-xs font-bold text-slate-950 transition hover:bg-amber-400"
-              >
-                Manage administrators <span className="ml-2" aria-hidden="true">→</span>
-              </Link>
-              <Link
-                href="/admin/commission-tiers"
-                className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-bold text-slate-800 transition hover:bg-slate-50"
-              >
-                Commission Tiers <span className="ml-2" aria-hidden="true">→</span>
-              </Link>
-              <Link href="/admin/proposals" className="inline-flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-5 py-3 text-sm font-bold text-rose-800 transition hover:bg-rose-100">Proposals &amp; Responses <span className="ml-2" aria-hidden="true">→</span></Link>
-            </div>
-          </div>
         </section>
 
         <p className="mt-8 text-xs leading-6 text-slate-500">
