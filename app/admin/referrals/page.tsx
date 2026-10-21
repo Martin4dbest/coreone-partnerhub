@@ -18,6 +18,7 @@ type Referral = {
   notes?: string | null;
   stage: string;
   created_at: string;
+  archived_at?: string | null;
 };
 
 type PartnerProfile = {
@@ -212,6 +213,42 @@ export default function AdminReferralManagementPage() {
   useEffect(() => {
     void loadData();
   }, [loadData]);
+
+  async function deleteOnboardedSchool(referral: Referral) {
+    if (referral.stage !== "onboarded") {
+      setError("Only onboarded schools can be deleted.");
+      return;
+    }
+
+    if (!window.confirm(
+      `Permanently delete ${referral.school_name}? Its commission record will be preserved, but it will no longer be linked to this school.`
+    )) return;
+
+    setWorkingId(referral.id);
+    setError("");
+    setMessage("");
+
+    try {
+      const { data, error: deleteError } = await supabase.rpc(
+        "coreone_partnerhub_delete_onboarded_referral",
+        { target_referral_id: referral.id }
+      );
+
+      if (deleteError) throw deleteError;
+      if (data !== true) throw new Error("The school could not be deleted.");
+
+      setSelectedReferral(null);
+      setMessage(`${referral.school_name} was deleted successfully.`);
+      await loadData();
+    } catch (err) {
+      console.error("Failed to delete school referral:", err);
+      setError(
+        err instanceof Error ? err.message : "Failed to delete the school."
+      );
+    } finally {
+      setWorkingId("");
+    }
+  }
 
   async function updateStage(referral: Referral, stage: string) {
     if (stage === "onboarded") {
@@ -1042,7 +1079,17 @@ export default function AdminReferralManagementPage() {
                     <p>Referral ID: {referral.id}</p>
                   </div>
 
-                  <div className="flex justify-end border-t border-slate-100 pt-4">
+                  <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:justify-end">
+                    {referral.stage === "onboarded" && (
+                      <button
+                        type="button"
+                        onClick={() => void deleteOnboardedSchool(referral)}
+                        disabled={workingId === referral.id}
+                        className="min-h-10 w-full rounded-lg border border-red-200 px-4 py-2 text-xs font-semibold text-red-700 transition hover:bg-red-50 disabled:opacity-50 sm:w-auto"
+                      >
+                        {workingId === referral.id ? "Deleting..." : "Delete School"}
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() => setSelectedReferral(null)}
