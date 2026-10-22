@@ -225,8 +225,7 @@ export default function Home() {
               <div className="step-content">
                 <span className="step-tag">GET STARTED</span>
                 <h3>Create your account</h3>
-                <p>and apply to the CoreOne Partner Network
-Register your details and submit the required information. Check back after a few minutes or hours to see if you have been approved. Once approved, log in to access the platform’s features. to apply to the CoreOne partner network.</p>
+                <p>Register your details. Check back after a few minutes or hours to see if you have been approved. Once approved, log in to access the platform’s features. to apply to the CoreOne partner network.and apply to the CoreOne Partner Network </p>
               </div>
               <span className="step-check"><Check /></span>
             </article>
