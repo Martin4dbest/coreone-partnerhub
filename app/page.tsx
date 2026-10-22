@@ -225,21 +225,14 @@ export default function Home() {
               <div className="step-content">
                 <span className="step-tag">GET STARTED</span>
                 <h3>Create your account</h3>
-                <p>Register your details and submit the information required to apply to the CoreOne partner network.</p>
+                <p>and apply to the CoreOne Partner Network
+Register your details and submit the required information. Check back after a few minutes or hours to see if you have been approved. Once approved, log in to access the platform’s features. to apply to the CoreOne partner network.</p>
               </div>
               <span className="step-check"><Check /></span>
             </article>
+            
             <article className="process-step">
               <span className="step-number">02</span>
-              <div className="step-content">
-                <span className="step-tag">VERIFICATION</span>
-                <h3>Submit documents for review</h3>
-                <p>Upload the requested documents and follow your application status while the CoreOne team reviews them.</p>
-              </div>
-              <span className="step-check"><Check /></span>
-            </article>
-            <article className="process-step">
-              <span className="step-number">03</span>
               <div className="step-content">
                 <span className="step-tag">BUILD YOUR NETWORK</span>
                 <h3>Introduce schools to CoreOne</h3>
@@ -248,7 +241,7 @@ export default function Home() {
               <span className="step-check"><Check /></span>
             </article>
             <article className="process-step">
-              <span className="step-number">04</span>
+              <span className="step-number">03</span>
               <div className="step-content">
                 <span className="step-tag">TRACK YOUR EARNINGS</span>
                 <h3>Follow eligible commissions</h3>
