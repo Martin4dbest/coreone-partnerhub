@@ -305,6 +305,7 @@ export default function DashboardPage() {
   const navigation = [
     { href: "/dashboard", label: "Overview", icon: "▦", active: true },
     { href: "/dashboard/referrals", label: "School referrals", icon: "▤", active: false },
+    { href: "/dashboard/referral-code", label: "My Referral Code", icon: "🔗", active: false },
     { href: "/dashboard/commissions", label: "Commissions & payouts", icon: "₦", active: false },
     { href: "/dashboard/proposal", label: "Proposals", icon: "✉", active: false },
   ];

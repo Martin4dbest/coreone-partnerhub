@@ -1,0 +1,17 @@
+diff --git a/app/admin/page.tsx b/app/admin/page.tsx
+--- a/app/admin/page.tsx
++++ b/app/admin/page.tsx
+@@ -279,7 +279,12 @@
+                 Manage referrals <span className="ml-2" aria-hidden="true">→</span>
+               </Link>
++              <Link
++                href="/admin/referral-codes"
++                className="inline-flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-5 py-3 text-sm font-bold text-rose-800 transition hover:bg-rose-100"
++              >
++                Staff Referral Codes <span className="ml-2" aria-hidden="true">→</span>
++              </Link>
+               <Link
+                 href="/admin/admins"
+                 className="inline-flex items-center justify-center rounded-xl bg-amber-500 px-4 py-3 text-xs font-bold text-slate-950 transition hover:bg-amber-400"
+               >
+                 Manage administrators <span className="ml-2" aria-hidden="true">→</span>

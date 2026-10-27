@@ -270,13 +270,19 @@ export default function AdminPage() {
                 Manage school referrals, update onboarding progress, record commissions after successful onboarding, and review representative payout requests.
               </p>
             </div>
-            <div className="mt-5 flex shrink-0 flex-wrap gap-3 sm:mt-0">
+            <div className="mt-6 grid w-full grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <Link href="/admin/resources" className="inline-flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-5 py-3 text-sm font-bold text-rose-800 transition hover:bg-rose-100">CoreOne Resources <span className="ml-2" aria-hidden="true">→</span></Link>
               <Link
                 href="/admin/referrals"
                 className="inline-flex items-center justify-center rounded-xl bg-rose-600 px-5 py-3 text-sm font-bold text-white transition hover:bg-rose-700"
               >
                 Manage referrals <span className="ml-2" aria-hidden="true">→</span>
+              </Link>
+              <Link
+                href="/admin/referral-codes"
+                className="inline-flex items-center justify-center rounded-xl border border-rose-200 bg-rose-50 px-5 py-3 text-sm font-bold text-rose-800 transition hover:bg-rose-100"
+              >
+                Staff Referral Codes <span className="ml-2" aria-hidden="true">→</span>
               </Link>
               <Link
                 href="/admin/admins"
